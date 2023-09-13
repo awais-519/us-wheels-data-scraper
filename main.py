@@ -19,8 +19,9 @@ options = webdriver.ChromeOptions()
 
 # my_user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
 
-options.add_argument("--user-data-dir=C:\\Users\\Awais Ul Hassan\\AppData\\Local\\Google\\Chrome\\User Data")
-options.add_argument("--profile-directory=Profile 101")
+options.add_argument("--user-data-dir=C:\\Users\\Awais Ul Hassan\\AppData\\Local\\Google\\Chrome\\User Data\\Profile1")
+options.add_argument("--profile-directory=Profile1")
+
 options.headless = False
 
 # options.add_argument(f'--user-agent='+my_user_agent)
@@ -99,6 +100,7 @@ while True:
 
         LAST_LOOP = PAGE_PRODUCTS
         PRODUCTS.append(PAGE_PRODUCTS)
+        print(index, " :TESTING")
         index +=1
     except KeyboardInterrupt:
         print('Keyboard interrupted')
