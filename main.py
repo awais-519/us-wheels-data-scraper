@@ -91,7 +91,6 @@ while True:
             break
            
         try:
-
             browser.find_elements(By.CSS_SELECTOR,"button.cc_show_more")[-1].click()
         except Exception as e:
             print('Something is wrong with clicking the next button.',e)
@@ -101,6 +100,7 @@ while True:
         LAST_LOOP = PAGE_PRODUCTS
         PRODUCTS.append(PAGE_PRODUCTS)
         print(index, " :TESTING")
+        time.sleep(5)
         index +=1
     except KeyboardInterrupt:
         print('Keyboard interrupted')
