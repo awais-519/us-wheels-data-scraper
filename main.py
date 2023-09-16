@@ -17,14 +17,14 @@ PASSWORD = "Testpassword123"
 
 options = webdriver.ChromeOptions()
 
-# my_user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
+#my_user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
 
 options.add_argument("--user-data-dir=C:\\Users\\Awais Ul Hassan\\AppData\\Local\\Google\\Chrome\\User Data\\Profile1")
 options.add_argument("--profile-directory=Profile1")
 
 options.headless = False
 
-# options.add_argument(f'--user-agent='+my_user_agent)
+#options.add_argument(f'--user-agent='+my_user_agent)
 # options.binary_location = "C:\Program Files\Google\Chrome\Application\chrome.exe"
 
 
@@ -42,48 +42,71 @@ browser.find_element(By.XPATH,'//*[@id="send2Dsk"]').click()
 print('Logged in')
 time.sleep(5)
 
-
-
 select = Select(browser.find_element(By.CSS_SELECTOR,'select.cc_page_size_control'))
 select.select_by_value('75')
+print('Page size 75 selected')
+time.sleep(5)
+
+
+# browser.find_element(By.CSS_SELECTOR,'.btn.btn-default.btn-sm.cc_sort_option.cc_sort_newest').click()
+# print('Page sorted by newest')
+# time.sleep(5)
 
 PRODUCTS = list()
 LAST_LOOP = list()
 index = 0
-while True:
 
+while True:
     try:
-        if index == 3:
-            break
+        # if index == 240:
+        #     break
+        
         PAGE_PRODUCTS = list()
         search_list = ""
         INNER_JSON = list()
 
+
+        if len(PAGE_PRODUCTS) == 56638:
+            break
+
         time.sleep(8)
+
         product_container = browser.find_element(By.CSS_SELECTOR,'div.productListContent').get_attribute('outerHTML')
         soup = BeautifulSoup(product_container, 'lxml')
         all_products = soup.find_all('span','cc_product_container')
+        
         for i in all_products:
             SKU = i.find('span','cc_product_sku').text.strip()
             name = i.find('a','cc_product_name').text.strip()
             category = i.find('div','cc_price').find_all('span')[-1]['productcategoryforproduct']
             MSRP = i.find('div','cc_price').find_all('span')[-1].text.strip().replace('$','').replace('.','').replace(',','')
+            
             try:
                 MSRP = float(MSRP) / 100
             except ValueError:
                 MSRP = 0
-            json_text = '{'+f'"sku":"{SKU}", "category":"{category}", "randomString":""'+'}'
-            INNER_JSON.append(json_text)
+
+            # time.sleep(8)
+            # json_text = '{'+f'"sku":"{SKU}", "category":"{category}", "randomString":""'+'}'
+
+            # INNER_JSON.append(json_text)
             PAGE_PRODUCTS.append([SKU, name, category, MSRP])
-        search_list = ",".join(INNER_JSON)
-        search_list = f'[{search_list}]'
+            # print(len(PAGE_PRODUCTS))
         
-        RESPONSE = dealer_prices(search_list)
-        dealer_price_list = json.loads(RESPONSE.text)[0]['result']['data']['All']['prices']
-        for i in dealer_price_list:
-            for j in PAGE_PRODUCTS:
-                if i["sku"] == j[0]:
-                    j.append(i['price']['Dealer Price'])
+        # search_list = ",".join(INNER_JSON)
+        # search_list = f'[{search_list}]'
+        
+        # RESPONSE = dealer_prices(search_list)
+        # # print(RESPONSE.text)
+
+        # dealer_price_list = json.loads(RESPONSE.text)[0]['result']['data']['All']['prices']
+
+
+        # for i in dealer_price_list:
+        #     for j in PAGE_PRODUCTS:
+        #         if i["sku"] == j[0]:
+        #             if i.get("price") and "Dealer Price" in i["price"]:
+        #                 j.append(i["price"]["Dealer Price"])
                     
         if LAST_LOOP == PAGE_PRODUCTS:
             # If last page is resulting the same, it means page got stuck and next button didnt work. 
@@ -100,7 +123,7 @@ while True:
         LAST_LOOP = PAGE_PRODUCTS
         PRODUCTS.append(PAGE_PRODUCTS)
         print(index, " :TESTING")
-        time.sleep(5)
+        time.sleep(8)
         index +=1
     except KeyboardInterrupt:
         print('Keyboard interrupted')
@@ -116,5 +139,6 @@ with open('result.csv','w', encoding='utf-8', newline='') as f:
     for product in PRODUCTS:
         for j in product:
             csvwriter.writerow(j)
+
 
 
